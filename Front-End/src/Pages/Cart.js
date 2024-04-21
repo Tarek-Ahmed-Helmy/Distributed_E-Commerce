@@ -46,7 +46,7 @@ function Cart() {
                         <p className="my-2">Total Items Price: 355 L.E</p>
                         <p className="pl-2 my-2 text-sm">- Shipping Price: 20 L.E</p>
                         <p className="my-2">Total Price: 355 L.E</p>
-                        <button className="mt-4 bg-yellow-500 py-3 px-4 w-full text-sm font-medium">PROCEED TO CHECKOUT</button>
+                        <button className="mt-4 bg-yellow-500 py-3 px-4 w-full text-sm font-medium hover:bg-yellow-400 duration-200">PROCEED TO CHECKOUT</button>
                     </div>
                 </div>
             </div>

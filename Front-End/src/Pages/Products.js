@@ -23,7 +23,7 @@ function Products() {
         getProducts();
     }, [])
     return (
-        <div className="w-[90%] mx-auto mt-[50px]">
+        <div className="w-[90%] mx-auto mt-[50px] mb-[50px]">
             <div className="md:w-3/4 w-full">
                 <h2 className="main-font text-2xl">Explore Our Products</h2>
                 <p>
