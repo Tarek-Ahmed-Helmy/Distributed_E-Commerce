@@ -21,6 +21,8 @@ module.exports = (db, type) => {
             type: type.STRING,
             allowNull: false
         }
+    }, {
+        timestamps: false
     })
 
 }

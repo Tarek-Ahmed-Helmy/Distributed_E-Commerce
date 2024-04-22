@@ -5,7 +5,8 @@ const ClientModel = require('./client')
 const SellerModel = require("./seller");
 const ProductModel = require("./product");
 const CartModel = require("./cart");
-const { Client } = require('pg');
+const BuyModel = require("./buy");
+const ContainModel = require("./contain");
 
 
 // create models
@@ -14,17 +15,19 @@ const Client_MAR = ClientModel(db_MAR, Sequelize);
 const Seller = SellerModel(db_EGY, Sequelize);
 const Product_EGY = ProductModel(db_EGY, Sequelize);
 const Product_MAR = ProductModel(db_MAR, Sequelize);
-const Cart = CartModel(db, Sequelize);
+const Cart = CartModel(db_EGY, Sequelize);
+const Buy = BuyModel(db_EGY, Sequelize);
+const Contain = ContainModel(db_EGY, Sequelize);
 
 // relationship
-// Client & Cart (1 -> 1)
+//Client & Cart (1 -> 1)
 Client_EGY.belongsTo(Cart)
 Cart.belongsTo(Client_EGY)
 
 Client_MAR.belongsTo(Cart);
 Cart.belongsTo(Client_MAR);
 
-// Seller & Product (1 -> many)
+//Seller & Product (1 -> many)
 Seller.hasMany(Product_EGY)
 Product_EGY.belongsTo(Seller)
 

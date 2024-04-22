@@ -1,4 +1,4 @@
-const client = (db, type) => {
+module.exports = (db, type) => {
     return db.define('clients', {
         clientID: {
             type: type.INTEGER,

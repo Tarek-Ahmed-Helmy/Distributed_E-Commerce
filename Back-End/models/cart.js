@@ -5,5 +5,7 @@ module.exports = (db, type)=>{
             autoIncrement: true,
             primaryKey: true
         }
+    }, {
+        timestamps: false
     })
 }

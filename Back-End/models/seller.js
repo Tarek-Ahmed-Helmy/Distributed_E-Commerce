@@ -1,4 +1,4 @@
-const seller = (db, type) => {
+module.exports = (db, type) => {
     return db.define('sellers', {
         sellerID: {
             type: type.INTEGER,
