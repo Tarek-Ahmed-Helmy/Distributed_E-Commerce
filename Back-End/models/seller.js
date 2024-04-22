@@ -1,6 +1,6 @@
-const client = (db, type) => {
-    return db.define('clients', {
-        clientID: {
+const seller = (db, type) => {
+    return db.define('sellers', {
+        sellerID: {
             type: type.INTEGER,
             autoIncrement: true,
             primaryKey: true
@@ -31,10 +31,10 @@ const client = (db, type) => {
         },
         role: {
             type: type.STRING,
-            defaultValue: 'client',
+            defaultValue: 'seller',
             readOnly: true
         },
-        cardInfo: {
+        bankAccount: {
             type: type.STRING,
             allowNull: false
         }
