@@ -2,17 +2,17 @@ const express = require('express')
 const cors = require("cors");
 const httpStatusCode = require("./utils/httpStatusText");
 require("dotenv").config();
-const { db1, db2 } = require("./config/database");
+const { db_EGY, db_MAR } = require("./config/database");
 
-db1.authenticate()
+db_EGY.authenticate()
     .then(()=>{
-        console.log('connection established for db1')
+        console.log('connection established for EGYPT server');
     }).catch((err)=>{
         console.log('connection failed', err) 
     })
-db2.authenticate()
+db_MAR.authenticate()
     .then(()=>{
-        console.log('connection established for db2')
+        console.log('connection established for Morocco server');
     }).catch((err)=>{
         console.log('connection failed', err) 
     })
