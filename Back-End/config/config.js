@@ -4,16 +4,10 @@ module.exports = {
     development: {
         username: process.env.DB_USERNAME,
         password: process.env.DB_PASSWORD,
-        database: process.env.DB_DATABASE,
-        port: 3306,
+        database_1: process.env.DB_DATABASE_1,
+        database_2: process.env.DB_DATABASE_2,
+        port: process.env.DB_PORT,
         dialect: process.env.DIALECT,
-        logging: false
-    },
-    production: {
-        username: process.env.DB_USERNAME,  
-        password: process.env.DB_PASSWORD,
-        database: process.env.DB_DATABASE,
-        dialect: process.env.DIALECT, 
         logging: false
     }
 }
