@@ -16,6 +16,10 @@ module.exports = (db, type) => {
         description:{
             type: type.TEXT,
             allowNull: false
+        },
+        category_name:{
+            type: type.STRING,
+            allowNull: false
         }
     })
 
