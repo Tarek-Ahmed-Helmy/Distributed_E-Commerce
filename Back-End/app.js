@@ -1,8 +1,20 @@
 const express = require('express')
 const cors = require("cors");
+const path = require("path");
+const app = express();
 const httpStatusCode = require("./utils/httpStatusText");
-require("dotenv").config();
 const { db_EGY, db_MAR } = require("./config/database");
+require("dotenv").config();
+
+app.use(express.json());
+app.use(cors());
+app.use(express.static(path.join(__dirname, "public")));
+
+// Routes
+const clientRouter = require("./routes/clientRouter");
+app.use("/clients", clientRouter);
+
+
 
 db_EGY.authenticate()
     .then(()=>{
@@ -17,12 +29,6 @@ db_MAR.authenticate()
         console.log('connection failed', err) 
     })
 
-
-const app = express();
-app.use(express.json());
-const path = require('path')
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(cors()) //to handle the request comes from other ports
 
 app.all("*", (req, res) => {
     return res.status(404).json({ status: httpStatusCode.ERROR, message: "this resource not found" })

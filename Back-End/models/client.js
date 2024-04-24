@@ -29,6 +29,10 @@ module.exports = (db, type) => {
             type: type.TEXT,
             allowNull: false
         },
+        country: {
+            type: type.STRING,
+            allowNull: false
+        },
         role: {
             type: type.STRING,
             defaultValue: 'client',
