@@ -29,8 +29,7 @@ module.exports = {
                 const error = appError.create("Client Already Exists", 400, httpStatusCode.ERROR)
                 return next(error)
             }
-            const password = req.body.password;
-            const hashedPassword = await bcrypt.hash(password, Number(process.env.SALT_ROUND))
+            const hashedPassword = await bcrypt.hash(req.body.password, Number(process.env.SALT_ROUND))
             const newClient = {
                     fname: req.body.fname,
                     lname: req.body.lname,

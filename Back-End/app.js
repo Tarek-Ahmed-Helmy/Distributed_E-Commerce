@@ -13,6 +13,8 @@ app.use(express.static(path.join(__dirname, "public")));
 // Routes
 const clientRouter = require("./routes/clientRouter");
 app.use("/clients", clientRouter);
+const sellerRouter = require("./routes/sellerRouter");
+app.use("/sellers", sellerRouter);
 
 
 
