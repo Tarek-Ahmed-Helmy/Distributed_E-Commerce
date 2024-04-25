@@ -15,6 +15,8 @@ const clientRouter = require("./routes/clientRouter");
 app.use("/clients", clientRouter);
 const sellerRouter = require("./routes/sellerRouter");
 app.use("/sellers", sellerRouter);
+const orderRouter = require("./routes/orderRouter");
+app.use("/orders", orderRouter);
 
 
 
