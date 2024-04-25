@@ -20,6 +20,10 @@ module.exports = (db, type) => {
         category_name:{
             type: type.STRING,
             allowNull: false
+        },
+        price: {
+            type: type.FLOAT,
+            allowNull: false
         }
     }, {
         timestamps: false
