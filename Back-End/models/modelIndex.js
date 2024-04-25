@@ -63,13 +63,6 @@ Product_EGY.belongsToMany(Order_EGY, { through: {model: Include_EGY, unique: fal
 Order_MAR.belongsToMany(Product_MAR, { through: {model: Include_MAR, unique: false}, as : "order2" });
 Product_MAR.belongsToMany(Order_MAR, { through: {model: Include_MAR, unique: false}, as : "product4" });
 
-// Cart & Product (many -> many)
-Cart_EGY.belongsToMany(Product_EGY, {through: {model: Contain_EGY, unique: false}, as: "cart3"})
-Product_EGY.belongsToMany(Cart_EGY, {through: {model: Contain_EGY, unique: false}, as: "Product5"})
-
-Cart_MAR.belongsToMany(Product_MAR, {through: {model: Contain_MAR, unique: false}, as: "cart4"})
-Product_MAR.belongsToMany(Cart_MAR, {through: {model: Contain_MAR, unique: false}, as: "Product6"})
-
 
 /// generate tables
 db_EGY.sync({force: false}).then(()=>{
