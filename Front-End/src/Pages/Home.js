@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 function ProductCard({ product }) {
     return (
         <div className="w-full">
-            <Link to={`${product.id}`}><img src={product.image} alt="product" className="w-full h-[220px] object-contain mx-auto"></img></Link>
+            <Link to={`products/${product.id}`}><img src={product.image} alt="product" className="w-full h-[220px] object-contain mx-auto"></img></Link>
             <div className="mt-2 px-4 text-center">
                 <Link to={`products/${product.id}`} className="hover:text-[#535C91] duration-200"><h2 className="font-medium">{product.title}</h2></Link>
                 <h2 className="text-md">{product.price} L.E</h2>
