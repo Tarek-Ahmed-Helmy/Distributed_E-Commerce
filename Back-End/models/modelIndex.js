@@ -64,7 +64,6 @@ Order_MAR.belongsToMany(Product_MAR, { through: {model: Include_MAR, unique: fal
 Product_MAR.belongsToMany(Order_MAR, { through: {model: Include_MAR, unique: false}, as : "product4" });
 
 
-
 /// generate tables
 db_EGY.sync({force: false}).then(()=>{
     console.log('Egypt Tables created')
