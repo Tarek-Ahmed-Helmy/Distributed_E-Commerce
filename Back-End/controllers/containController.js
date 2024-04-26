@@ -10,11 +10,10 @@ const clientController = require('./clientController');
 module.exports = {
     addProduct: asyncWrapper(
         async(req, res, next)=>{
-            let entry=null;
             const quantity = req.body.quantity
             if(client.country=="EGY"){
                 // check whether there is an entry or not
-                const entry = await Contain_EGY.findOne({
+                let entry = await Contain_EGY.findOne({
                     where: {
                         productID: req.body.productID,
                         cartID: req.body.cartID
@@ -28,7 +27,7 @@ module.exports = {
                 return res.status(200).json({ status: httpStatusCode.SUCCESS, message: "Product is added Successfully" });
             }
             else{
-                const entry = await Contain_MAR.findOne({
+                let entry = await Contain_MAR.findOne({
                     where: {
                         productID: req.body.productID,
                         cartID: req.body.cartID
@@ -46,29 +45,46 @@ module.exports = {
     ),
     deleteProduct: asyncWrapper(
         async(req, res, next)=>{
-            // i have productID, cartID, country
-            if(req.body.country=="EGY"){
-                const contained = await Contain_EGY.findOne({
-                    where:{
+            const quantity = req.body.quantity
+            if(client.country=="EGY"){
+                // check whether there is an entry or not
+                let entry = await Contain_EGY.findOne({
+                    where: {
                         productID: req.body.productID,
                         cartID: req.body.cartID
                     }
                 })
-                if(contained){
-                    contained.quantity--
-                    await Contain_EGY.update(
-                    {quantity: contained.quantity},
-                    {
-                        where:{
-                            productID: req.body.productID,
-                            cartID: req.body.cartID
-                            }
-                    }
-                    )
+                if(entry){
+                    await Contain_EGY.update({quantity: quantity})
+                    return res.status(200).json({ status: httpStatusCode.SUCCESS, message: "Quantity is updated Successfully" });
                 }
+                entry = await Contain_EGY.destroy({
+                    where: {
+                        productID: req.body.productID,
+                        cartID: req.body.cartID
+                    }
+                })
+                return res.status(200).json({ status: httpStatusCode.SUCCESS, message: "Product is deleted Successfully" });
+            }
+            else{
+                let entry = await Contain_MAR.findOne({
+                    where: {
+                        productID: req.body.productID,
+                        cartID: req.body.cartID
+                    }
+                })
+                if(entry){
+                    await Contain_MAR.update({quantity: quantity})
+                    return res.status(200).json({ status: httpStatusCode.SUCCESS, message: "Quantity is updated Successfully" });
+                }
+                entry = await Contain_MAR.destroy({
+                    where: {
+                        productID: req.body.productID,
+                        cartID: req.body.cartID
+                    }
+                })
+                return res.status(200).json({ status: httpStatusCode.SUCCESS, message: "Product is deleted Successfully" });
                 
-            }else{
-
             }
         }
     )
