@@ -10,6 +10,7 @@ const router = express.Router();
 router.route('/addToCart')
     .post(containController.addProduct)
 
-
+router.route('/deleteFromCart')
+    .delete(containController.deleteProduct)
 
 module.exports = router
