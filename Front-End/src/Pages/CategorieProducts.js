@@ -1,28 +1,32 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 function ProductCard({ product }) {
     return (
         <div className="w-full">
             <Link to={`${product.id}`}><img src={product.image} alt="product" className="w-full h-[220px] object-contain mx-auto"></img></Link>
             <div className="mt-2 px-4 text-center">
-                <Link to={`${product.id}`} className="hover:text-[#535C91] duration-200"><h2 className="font-medium">{product.title}</h2></Link>
+                <Link to={`/products/${product.id}`} className="hover:text-[#535C91] duration-200"><h2 className="font-medium">{product.title}</h2></Link>
                 <h2 className="text-md">{product.price} L.E</h2>
             </div>
         </div>
     )
 }
-function Products() {
+function CategorieProducts() {
     const [products, setProducts] = useState([]);
-    const categories = ["electronics" , "jewelery" , "men's clothing" , "women's clothing"];
-    function getProducts() {
-        fetch('https://fakestoreapi.com/products')
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const category = urlParams.get('type')
+    const [active, setActive] = useState(category)
+    const categories = ["electronics", "jewelery", "men's clothing", "women's clothing"];
+    function getCategoryProducts() {
+        fetch(`https://fakestoreapi.com/products/category/${category}`)
             .then(res => res.json())
             .then(response => setProducts(response))
             .catch()
     }
     useEffect(() => {
-        getProducts();
-    }, [])
+        getCategoryProducts();
+    }, [active])
     return (
         <div className="w-[90%] mx-auto mt-[50px] mb-[50px]">
             <div className="md:w-3/4 w-full">
@@ -32,9 +36,11 @@ function Products() {
                 </p>
             </div>
             <div className="mt-10 flex items-center gap-4">
-                <button className="px-4 py-2 text-sm border border-black rounded-full">All</button>
-                {categories.map((category)=>{
-                    return <Link to={`category?type=${category}`}><button className="px-4 py-2 text-sm border border-gray-300 rounded-full">{category}</button></Link>
+                <Link to={`/products`}><button className="px-4 py-2 text-sm border border-gray-300 rounded-full">All</button></Link>
+                {categories.map((category,index) => {
+                    return <Link onClick={()=>{setActive(category)}} to={`/products/category?type=${category}`} key={index+1}>
+                        <button className={`px-4 py-2 text-sm border ${active === category ? "border-black" : "border-gray-300"} rounded-full`}>
+                            {category}</button></Link>
                 })}
             </div>
             <div className="mt-8 grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-8">
@@ -46,4 +52,4 @@ function Products() {
     )
 }
 
-export default Products;
+export default CategorieProducts;

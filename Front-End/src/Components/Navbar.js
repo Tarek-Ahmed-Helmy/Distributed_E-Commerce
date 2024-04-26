@@ -61,7 +61,7 @@ function NavBar() {
                         <h2 className="bg-[#ff0000] rounded-xl px-[4px] text-[10px] font-medium">{cart}</h2>
                     </div>
                 </div>
-                <Link className="text-[20px] text-[#1B1A55] bg-[#535C91] p-1 rounded-full hover:bg-[#546C92] duration-200"><PersonFill /></Link>
+                <Link to="profile" className="text-[20px] text-[#1B1A55] bg-[#535C91] p-1 rounded-full hover:bg-[#546C92] duration-200"><PersonFill /></Link>
             </div>
         </div>
     )

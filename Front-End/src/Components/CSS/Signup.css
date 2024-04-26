@@ -1,0 +1,37 @@
+.name-container{
+    display: flex;
+    width: 370px;
+    justify-content: space-between;
+}
+
+.name-input input {
+    width: 160px;
+    height: 40px;
+    padding: 5px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    border: none;
+}
+
+.signup-button-holder{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 20px;
+}
+
+.signup-button-holder button {
+    width: 180px;
+    padding: 7px 0px;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #f9f9f9;
+    border-radius: 50px;
+    background-color: #2a5ba4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    cursor: pointer;
+}

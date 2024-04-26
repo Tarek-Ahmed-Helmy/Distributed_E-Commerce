@@ -1,6 +1,7 @@
 import React from "react";
-import Envelop from '../Assets/Images/envelope.png';
-import Lock from '../Assets/Images/lock.png';
+import Envelop from '../Components/images/envelope.png';
+import Lock from '../Components/images/lock.png';
+import "../Components/CSS/Signup.css"
 
 export default function Signup(){
     return(
@@ -12,7 +13,7 @@ export default function Signup(){
                 <div className="name-container">
                     <div className="name-input-holder">
                     <label>First Name</label>
-                        <div className="name-input">
+                        <div className="name-input  mt-2">
                             <input
                                 type="first-name"
                                 placeholder="John"
@@ -21,7 +22,7 @@ export default function Signup(){
                     </div>
                     <div className="name-input-holder">
                         <label>Last Name</label>
-                        <div className="name-input">
+                        <div className="name-input mt-2">
                             <input
                                 type="last-name"
                                 placeholder="Wick"
@@ -56,7 +57,7 @@ export default function Signup(){
                     />
 
                 </div>
-                <label>Rewrite your password</label>
+                <label>Confirm password</label>
                 <div className='input'>
                     <input
                         type="password"

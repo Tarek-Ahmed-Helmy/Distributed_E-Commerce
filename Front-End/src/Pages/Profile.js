@@ -1,5 +1,5 @@
-import profilePic from '../Assets/Images/profile.png'
-
+import profilePic from '../Components/images/profile.png'
+import '../Components/CSS/Profile.css'
 export default function Profile(){
     return(
         <div className="profile-container">
