@@ -17,7 +17,8 @@ const sellerRouter = require("./routes/sellerRouter");
 app.use("/sellers", sellerRouter);
 const orderRouter = require("./routes/orderRouter");
 app.use("/orders", orderRouter);
-
+const containRouter = require("./routes/containRouter");
+app.use("/contain", containRouter);
 
 
 db_EGY.authenticate()
