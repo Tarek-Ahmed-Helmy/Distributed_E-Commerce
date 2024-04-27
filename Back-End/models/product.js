@@ -29,6 +29,10 @@ module.exports = (db, type) => {
         price: {
             type: type.FLOAT,
             allowNull: false
+        },
+        image: {
+            type: type.TEXT,
+            allowNull: false
         }
     }, {
         timestamps: false
