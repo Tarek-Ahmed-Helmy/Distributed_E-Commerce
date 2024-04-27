@@ -4,9 +4,11 @@ const httpStatusCode = require("../utils/httpStatusText");
 const asyncWrapper = require("../middlewares/asyncWrapper");
 const appError = require("../utils/appError");
 const { db_EGY, db_MAR } = require("../config/database");
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+
 
 module.exports = {
-    create: asyncWrapper(
+    checkout: asyncWrapper(
         async (req, res, next) => {
             const country = req.currentUser.country
             const newOrder = {
@@ -28,7 +30,19 @@ module.exports = {
                         await Include_EGY.create(newItem, { transaction });
                     }
                     await transaction.commit();
-                    return res.status(201).json({ status: httpStatusCode.SUCCESS, message: "Order is Created Successfully" });
+                    stripe.charges.create({
+                        amount: req.body.totalPrice * 100, // Amount in cents
+                        currency: 'usd',
+                        source: req.body.cardToken, // Use a test card token
+                        description: 'Test Payment',
+                        }, async function(err, charge) {
+                        if (err) {
+                            await Include_EGY.destroy({ where: { orderID : order.orderID}})
+                            await Order_EGY.destroy({ where: { orderID: order.orderID } })
+                            return next(err)
+                        }
+                    });
+                    return res.status(201).json({ status: httpStatusCode.SUCCESS, message: "Order is Created and Successfully Paid" });
                 } catch (err) {
                     if (transaction) await transaction.rollback();
                     const error = appError.create("Unexpected Error, Try Again Later", 500, httpStatusCode.FAIL)
@@ -48,6 +62,18 @@ module.exports = {
                         await Include_MAR.create(newItem, { transaction });
                     }
                     await transaction.commit();
+                    stripe.charges.create({
+                        amount: req.body.totalPrice * 100, // Amount in cents
+                        currency: 'usd',
+                        source: req.body.cardToken, // Use a test card token
+                        description: 'Test Payment',
+                        }, async function(err, charge) {
+                        if (err) {
+                            await Include_MAR.destroy({ where: { orderID : order.orderID}})
+                            await Order_MAR.destroy({ where: { orderID: order.orderID } })
+                            return next(err)
+                        }
+                    });
                     return res.status(201).json({ status: httpStatusCode.SUCCESS, message: "Order is Created Successfully" });
                 } catch (err) {
                     if (transaction) await transaction.rollback();

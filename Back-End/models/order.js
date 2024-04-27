@@ -8,6 +8,11 @@ module.exports = (db, type)=>{
         totalPrice: {
             type: type.FLOAT,
             allowNull: false
+        },
+        status: {
+            type: type.STRING,
+            defaultValue: 'un-paid',
+            allowNull: false
         }
     }, {
         timestamps: true
