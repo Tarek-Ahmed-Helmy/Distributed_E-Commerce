@@ -1,8 +1,8 @@
 module.exports = (db, type) => {
     return db.define('products', {
-        id:{
+        productID:{
             type: type.INTEGER,
-            autoIncrement: true,
+            autoIncrement: true, 
             primaryKey: true
         },
         name:{
@@ -11,6 +11,11 @@ module.exports = (db, type) => {
         },
         quantity_available:{
             type: type.INTEGER, 
+            allowNull: false
+        },
+        quantity_sold:{
+            type: type.INTEGER, 
+            defaultValue: 0,
             allowNull: false
         },
         description:{

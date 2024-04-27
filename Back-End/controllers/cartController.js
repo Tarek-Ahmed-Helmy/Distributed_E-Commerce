@@ -7,17 +7,17 @@ const bcrypt = require('bcrypt')
 const generateJWT = require('../utils/generateJWT')
 
 module.exports = {
-    get: asyncWrapper(
+    getProduct: asyncWrapper(
         async(req, res, next)=>{
 
         } 
     ),
-    get: asyncWrapper(
+    getAllProducts: asyncWrapper(
         async(req, res, next)=>{
             
         }
     ),
-    get: asyncWrapper(
+    addStock: asyncWrapper( // two cases: 1- there is a product then add quantity. 2- there isn't then add entry
         async(req, res, next)=>{
             
         }
