@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize');
-const { Client_EGY, Client_MAR } = require('../models/modelIndex')
+const { Client_EGY, Client_MAR, Cart_EGY, Cart_MAR } = require('../models/modelIndex')
 const httpStatusCode = require("../utils/httpStatusText");
 const asyncWrapper = require("../middlewares/asyncWrapper");
 const appError = require("../utils/appError");
@@ -10,7 +10,7 @@ const generateJWT = require('../utils/generateJWT')
 module.exports = {
     register: asyncWrapper(
         async (req, res, next) => {
-            const country = req.body.country
+            const { country } = req.body
             const duplicates = await Promise.all([
                 Client_EGY.findOne({
                     raw: true, where: { [Sequelize.Op.or]: [
@@ -30,22 +30,34 @@ module.exports = {
                 return next(error)
             }
             const hashedPassword = await bcrypt.hash(req.body.password, Number(process.env.SALT_ROUND))
-            const newClient = {
-                    fname: req.body.fname,
-                    lname: req.body.lname,
-                    username: req.body.username,
-                    email: req.body.email,
-                    password: hashedPassword,
-                    phone: req.body.phone,
-                    country: req.body.country,
-                    cardInfo: req.body.cardInfo
-                }
-            if (country === 'EGY') {
-                await Client_EGY.create(newClient)
-            } else if (country === 'MAR') {
-                await Client_MAR.create(newClient)
+            let newClient = {
+                fname: req.body.fname,
+                lname: req.body.lname,
+                username: req.body.username,
+                email: req.body.email,
+                password: hashedPassword,
+                phone: req.body.phone,
+                country: req.body.country,
+                cardInfo: req.body.cardInfo
             }
-            return res.status(201).json({ status: httpStatusCode.SUCCESS, message: "Client is Registered Successfully" });
+            let ClientModel, CartModel;
+            if (country === 'EGY') {
+                ClientModel = Client_EGY;
+                CartModel = Cart_EGY;
+            } else if (country === 'MAR') {
+                ClientModel = Client_MAR;
+                CartModel = Cart_MAR;
+            } else {
+                return next(appError.create("Invalid country code", 400, httpStatusCode.ERROR));
+            }
+            newClient = await ClientModel.create(newClient)
+            if (newClient) {
+                const newCart = await CartModel.create({ clientClientID: newClient.clientID })
+                await ClientModel.update({cartId: newCart.id }, { where: { clientID: newClient.clientID }})
+                return res.status(201).json({ status: httpStatusCode.SUCCESS, message: "Client is Registered Successfully" });
+            }
+            const error = appError.create("Unexpected Error, Try Again Later", 500, httpStatusCode.FAIL);
+            return next(error);
         }
     ),
     login: asyncWrapper(

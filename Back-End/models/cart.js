@@ -4,10 +4,6 @@ module.exports = (db, type)=>{
             type: type.INTEGER,
             autoIncrement: true,
             primaryKey: true
-        }, 
-        totalPrice:{
-            type: type.INTEGER,
-            allowNull: false
         }
     }, {
         timestamps: false
