@@ -1,7 +1,12 @@
 import { useState, useEffect } from "react";
 import { PlusLg, DashLg } from "react-bootstrap-icons";
+import { useDispatch } from "react-redux";
+import { setCartProducts,setCartPrice } from "../Components/rtk/slices/cartSlice";
+import { useNavigate } from "react-router-dom";
 import emptyList from "../Components/images/empty cart.svg"
 function Cart() {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [products, setProducts] = useState([]);
     const [totalPrice, SetTotalPrice] = useState(0);
     function getProducts() {
@@ -36,6 +41,11 @@ function Cart() {
             setProducts(newData)
             getTotalPrice(newData)
         }
+    }
+    function proceedToCheckout(){
+        dispatch(setCartProducts(products));
+        dispatch(setCartPrice(parseFloat(totalPrice.toFixed(2)) + 20))
+        navigate('payment');
     }
     useEffect(() => {
         getProducts();
@@ -73,7 +83,8 @@ function Cart() {
                         <p className="my-2">Total Items Price: {totalPrice.toFixed(2)} L.E</p>
                         <p className="pl-2 my-2 text-sm">- Shipping Price: 20 L.E</p>
                         <p className="my-2">Total Price: {parseFloat(totalPrice.toFixed(2)) + 20} L.E</p>
-                        <button className="mt-4 bg-yellow-500 py-3 px-4 w-full text-sm font-medium hover:bg-yellow-400 duration-200">PROCEED TO CHECKOUT</button>
+                        <button className="mt-4 bg-yellow-500 py-3 px-4 w-full text-sm font-medium hover:bg-yellow-400 duration-200"
+                        onClick={()=>{proceedToCheckout()}}>PROCEED TO CHECKOUT</button>
                     </div>
                 </div>
             </div>

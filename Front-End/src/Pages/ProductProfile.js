@@ -1,16 +1,56 @@
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { addtoCart } from "../Components/rtk/slices/cartSlice";
+import { useSelector } from "react-redux";
+import { jwtDecode } from "jwt-decode";
+import Swal from "sweetalert2";
+
 function ProductProfile() {
     const params = useParams();
+    const client = useSelector(state => state.auth);
+    const profileData = jwtDecode(client.token)
     const productId = params.productid;
     const [product, setProduct] = useState([]);
-    const dispatch = useDispatch();
     function getProduct() {
         fetch(`https://fakestoreapi.com/products/${productId}`)
             .then(res => res.json())
             .then(response => setProduct(response)).catch()
+    }
+    function Failure(message) {
+        Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: message,
+        });
+    }
+    function AddToCart() {
+        fetch(`http://localhost:4500/contain/addToCart`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                "username": profileData.username,
+                "clientID": profileData.clientID,
+                "productID": productId,
+                "cartID": 1
+            }),
+        }).then(res => res.json()).then((res) => {
+            if (res.status === "success") {
+                Swal.fire({
+                    title: "Product Added To Cart Successfully !",
+                    icon: "success"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.reload();
+                    }
+                });
+            } else if (res.status === "error") {
+                Failure(res.message)
+            } else if (res.status === "fail") {
+                Failure("Something went wrong!")
+            }
+        }).catch(error => { })
     }
     useEffect(() => {
         getProduct();
@@ -26,7 +66,7 @@ function ProductProfile() {
                     <p className="lg:w-3/4">{product.description}</p>
                     <div className="lg:w-3/4 mt-8 flex items-center text-white gap-4">
                         <button className="w-full py-2 px-8 bg-[#1B1A55] hover:bg-[#0B0A45] duration-200">Buy it Now</button>
-                        <button className="w-full py-2 px-8 bg-[#535C91] hover:bg-[#434C81] duration-200" onClick={() =>{dispatch(addtoCart(product))}}>Add to Cart</button>
+                        <button className="w-full py-2 px-8 bg-[#535C91] hover:bg-[#434C81] duration-200" onClick={() => { }}>Add to Cart</button>
                     </div>
                     <br></br>
                 </div>
