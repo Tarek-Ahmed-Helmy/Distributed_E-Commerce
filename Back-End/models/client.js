@@ -37,10 +37,6 @@ module.exports = (db, type) => {
             type: type.STRING,
             defaultValue: 'client',
             readOnly: true
-        },
-        cardInfo: {
-            type: type.STRING,
-            allowNull: false
         }
     }, {
         timestamps: false

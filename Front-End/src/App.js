@@ -15,28 +15,43 @@ import NavBarControl from './Components/NavBarControl';
 import Login from './Pages/Login';
 import Signup from './Pages/Signup';
 import Profile from './Pages/Profile';
+import AdminLogin from './Pages/AdminLogin';
+import AdminSignup from './Pages/AdminSignUp';
+import Payment from './Pages/Payment';
+import RequireAuth from './Components/RequireAuth';
 function App() {
   return (
     <>
-      <NavBar />
+      <NavBarControl>
+        <NavBar />
+      </NavBarControl>
       <Routes>
         <Route path='/' element={<Home />}></Route>
-        <Route path='products' element={<Outlet />}>
-          <Route path='' element={<Products />} />
-          <Route path=':productid' element={<ProductProfile />} />
-          <Route path='category' element={<CategorieProducts />} />
+        <Route element={<RequireAuth allowedRoles={["client"]} />} >
+          <Route path='products' element={<Outlet />}>
+            <Route path='' element={<Products />} />
+            <Route path=':productid' element={<ProductProfile />} />
+            <Route path='category' element={<CategorieProducts />} />
+          </Route>
+          <Route path='cart' element={<Outlet />}>
+            <Route path='' element={<Cart />} />
+            <Route path='payment' element={<Payment />} />
+          </Route>
         </Route>
-        <Route path='cart' element={<Cart />}></Route>
-        <Route element={<AdminController />}>
-          <Route path='admin' element={<Outlet />} >
-            <Route path='' element={<ProductsControl />} />
-            <Route path=':productid' element={<EditProduct />} />
-            <Route path='add-product' element={<AddProduct />} />
+        <Route element={<RequireAuth allowedRoles={["admin"]} />} >
+          <Route element={<AdminController />}>
+            <Route path='seller-products' element={<Outlet />} >
+              <Route path='' element={<ProductsControl />} />
+              <Route path=':productid' element={<EditProduct />} />
+              <Route path='add-product' element={<AddProduct />} />
+            </Route>
           </Route>
         </Route>
         <Route path='login' element={<Login />}></Route>
         <Route path='sign-up' element={<Signup />}></Route>
         <Route path='profile' element={<Profile />}></Route>
+        <Route path='admin-login' element={<AdminLogin />}></Route>
+        <Route path='admin-sign-up' element={<AdminSignup />}></Route>
       </Routes>
     </>
   );

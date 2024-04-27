@@ -6,7 +6,7 @@ const router = express.Router();
 
 
 router.route("/")
-    .post(verifyToken, allowedTo('client'), orderController.create)
+    .post(verifyToken, allowedTo('client'), orderController.checkout)
     .get(verifyToken, allowedTo('client'), orderController.getAll)
 
 router.route("/:ID")
