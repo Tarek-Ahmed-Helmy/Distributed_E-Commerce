@@ -37,6 +37,15 @@ module.exports = {
             }
         }
     ),
+    getAllProductsHome: asyncWrapper(
+        async(req, res, next)=>{
+            const products = await Product_MAR.findAll()
+            if(products){
+                return res.status(200).json({status: httpStatusCode, message: "Products found Successfully", data: products})
+            }
+            return res.status(404).json({status: httpStatusCode.FAIL, message: "no data was found"})
+        }
+    ),
     getAllProducts: asyncWrapper( // for one category
         async(req, res, next)=>{
             const products = await Product_EGY.findAll({
