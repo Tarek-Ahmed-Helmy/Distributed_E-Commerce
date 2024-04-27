@@ -1,4 +1,4 @@
-const { Order_EGY, Order_MAR, Include_EGY, Include_MAR, Product_EGY, Product_MAR } = require("../models/modelIndex");
+const { Order_EGY, Order_MAR, Include_EGY, Include_MAR, Product_EGY, Product_MAR, Seller_EGY, Seller_MAR } = require("../models/modelIndex");
 const httpStatusCode = require("../utils/httpStatusText");
 const asyncWrapper = require("../middlewares/asyncWrapper");
 const appError = require("../utils/appError");
@@ -16,11 +16,13 @@ module.exports = {
                 OrderModel = Order_EGY;
                 ProductModel = Product_EGY;
                 IncludeModel = Include_EGY;
+                SellerModel = Seller_EGY;
                 transaction = await db_EGY.transaction();
             } else if (country === 'MAR') {
                 OrderModel = Order_MAR;
                 ProductModel = Product_MAR;
                 IncludeModel = Include_MAR;
+                SellerModel = Seller_MAR;
                 transaction = await db_MAR.transaction();
             } else {
                 return next(appError.create("Invalid country code", 400, httpStatusCode.ERROR));
@@ -31,7 +33,7 @@ module.exports = {
                 t2 = await db_MAR.transaction();
                 const order = await OrderModel.create({ clientClientID: clientID, totalPrice: totalPrice }, { transaction });
                 for (const item of cart) {
-                    const product = await ProductModel.findOne({ where: { productID: item.productID } });
+                    const product = await ProductModel.findOne({ raw:true, where: { productID: item.productID } });
                     if (!product || product.quantity_available < item.quantity) {
                         await Promise.all([t1.rollback(), t2.rollback(), transaction.rollback()]);
                         const error = appError.create(`Quantity Available for ${product.name} is insufficient`, 400, httpStatusCode.ERROR)
@@ -45,6 +47,9 @@ module.exports = {
                         quantity_available: product.quantity_available - item.quantity,
                         quantity_sold: product.quantity_sold + item.quantity
                     }, { where: { productID: item.productID }, transaction: t2 });
+                    const seller = await SellerModel.findOne({ raw: true, where: { sellerID: product.sellerSellerID } });
+                    await Seller_EGY.update({ balance: seller.balance + (item.quantity * product.price) }, { where: { sellerID: seller.sellerID }, transaction: t1 });
+                    await Seller_MAR.update({ balance: seller.balance + (item.quantity * product.price) }, { where: { sellerID: seller.sellerID }, transaction: t2 });
                     const newItem = {
                         orderOrderID: order.orderID,
                         productProductID: item.productID,
@@ -52,13 +57,13 @@ module.exports = {
                     };
                     await IncludeModel.create(newItem, { transaction });
                 }
-                await Promise.all([t1.commit(), t2.commit(), transaction.commit()]);
                 await stripe.charges.create({
                     amount: totalPrice * 100,
                     currency: 'usd',
                     source: cardToken,
                     description: 'Test Payment'
                 });
+                await Promise.all([t1.commit(), t2.commit(), transaction.commit()]);
                 return res.status(201).json({ status: httpStatusCode.SUCCESS, message: "Order is Created and Successfully Paid" });
             } catch (err) {
                 if (t1) await t1.rollback();

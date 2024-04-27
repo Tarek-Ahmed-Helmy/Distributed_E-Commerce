@@ -34,9 +34,10 @@ module.exports = (db, type) => {
             defaultValue: 'seller',
             readOnly: true
         },
-        bankAccount: {
-            type: type.STRING,
-            allowNull: false
+        balance: {
+            type: type.INTEGER,
+            allowNull: false,
+            defaultValue: 0
         }
     }, {
         timestamps: false
