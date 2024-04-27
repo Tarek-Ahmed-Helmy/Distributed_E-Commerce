@@ -21,7 +21,8 @@ const containRouter = require("./routes/containRouter");
 app.use("/contain", containRouter);
 const productRouter = require("./routes/productRouter");
 app.use("/product", productRouter);
-
+const cartRouter = require("./routes/cartRouter");
+app.use("/cart", cartRouter);
 
 db_EGY.authenticate()
     .then(()=>{

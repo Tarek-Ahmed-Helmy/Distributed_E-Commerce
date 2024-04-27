@@ -13,6 +13,9 @@ router.route('/getProduct/:productID')
 router.route('/getAllProducts/:category_name')
     .get(productController.getAllProducts)
 
+router.route('/getAllProductsHome')
+    .get(productController.getAllProductsHome)
+
 router.route('/getAllProductsSeller/:sellerID')
     .get(productController.getAllProductsSeller)
 
