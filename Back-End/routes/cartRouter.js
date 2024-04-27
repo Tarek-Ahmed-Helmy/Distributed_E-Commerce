@@ -6,7 +6,7 @@ const router = express.Router();
 
 
 router.route('/getAllProducts')
-    .get(cartController.getAllProducts)
+    .get(verifyToken, allowedTo('client'),cartController.getAllProducts)
 
 
 
