@@ -10,6 +10,7 @@ const clientController = require('./clientController');
 module.exports = {
     addProduct: asyncWrapper(
         async(req, res, next)=>{
+            const country = req.currentUser.country
             const quantity = req.body.quantity
             if(client.country=="EGY"){
                 // check whether there is an entry or not
@@ -20,7 +21,12 @@ module.exports = {
                     }
                 })
                 if(entry){
-                    await Contain_EGY.update({quantity: quantity})
+                    await Contain_EGY.update({quantity: quantity}, {
+                        where: {
+                        productID: req.body.productID,
+                        cartID: req.body.cartID
+                        }
+                    })
                     return res.status(200).json({ status: httpStatusCode.SUCCESS, message: "Quantity is updated Successfully" });
                 }
                 entry = await Contain_EGY.create({quantity: quantity, productID: req.body.productID, cartID: req.body.cartID})
@@ -34,7 +40,12 @@ module.exports = {
                     }
                 })
                 if(entry){
-                    await Contain_MAR.update({quantity: quantity})
+                    await Contain_MAR.update({quantity: quantity}, {
+                        where: {
+                            productID: req.body.productID,
+                            cartID: req.body.cartID
+                            }
+                    })
                     return res.status(200).json({ status: httpStatusCode.SUCCESS, message: "Quantity is updated Successfully" });
                 }
                 entry = await Contain_MAR.create({quantity: quantity, productID: req.body.productID, cartID: req.body.cartID})
@@ -55,7 +66,12 @@ module.exports = {
                     }
                 })
                 if(entry){
-                    await Contain_EGY.update({quantity: quantity})
+                    await Contain_EGY.update({quantity: quantity}, {
+                        where: {
+                            productID: req.body.productID,
+                            cartID: req.body.cartID
+                            }
+                    })
                     return res.status(200).json({ status: httpStatusCode.SUCCESS, message: "Quantity is updated Successfully" });
                 }
                 entry = await Contain_EGY.destroy({
@@ -74,7 +90,12 @@ module.exports = {
                     }
                 })
                 if(entry){
-                    await Contain_MAR.update({quantity: quantity})
+                    await Contain_MAR.update({quantity: quantity}, {
+                        where: {
+                            productID: req.body.productID,
+                            cartID: req.body.cartID
+                            }
+                    })
                     return res.status(200).json({ status: httpStatusCode.SUCCESS, message: "Quantity is updated Successfully" });
                 }
                 entry = await Contain_MAR.destroy({
