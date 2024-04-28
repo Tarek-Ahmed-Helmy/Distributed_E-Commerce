@@ -27,4 +27,7 @@ router.route('/addProduct')
 router.route('/editProduct')
     .patch(verifyToken, allowedTo('seller'), productController.editProduct)
 
+router.route('/getBestSeller')
+    .get(productController.getBestSeller)
+
 module.exports = router
