@@ -9,7 +9,8 @@ const generateJWT = require('../utils/generateJWT')
 module.exports = {
     getAllProducts: asyncWrapper(
         async(req, res, next)=>{
-            const country = req.currentUser.country 
+            const country = req.currentUser.country
+            const {Op} = require("sequelize")
             if(country=="EGY"){
                 const entries = await Contain_EGY.findAll({
                     where:{

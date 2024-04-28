@@ -2,13 +2,21 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {PlusLg, PencilFill, Trash3Fill } from "react-bootstrap-icons";
 import Swal from "sweetalert2";
+import { useSelector } from "react-redux";
+import { jwtDecode } from "jwt-decode";
 function ProductsControl() {
+    const token = useSelector(store => store.auth).token
+    const profile = jwtDecode(token);
     const [products, setProducts] = useState([]);
     function getProducts() {
-        fetch('https://fakestoreapi.com/products')
-            .then(res => res.json())
-            .then(response => setProducts(response))
-            .catch()
+        fetch(`http://localhost:4500/product/getAllProductsSeller/${profile.sellerID}`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            },
+        }).then(res => res.json())
+        .then(response => setProducts(response.data))
+        .catch()
     }
     useEffect(() => {
         getProducts();
@@ -48,12 +56,12 @@ function ProductsControl() {
                             </tr>
                         </thead>
                         <tbody>
-                            {products.map((product) => {
+                            {products.length > 0 && products.map((product) => {
                                 return <tr className="border-b border-slate-300">
-                                    <td className="py-4 px-2">{product.id}</td>
-                                    <td className="py-4 px-2">{product.title}</td>
+                                    <td className="py-4 px-2">{product.productID}</td>
+                                    <td className="py-4 px-2">{product.name}</td>
                                     <td className="py-4 px-2 flex items-center gap-6">
-                                        <Link to={`${product.id}`}><button className="hover:text-gray-600 duration-100"><PencilFill /></button></Link>
+                                        <Link to={`${product.productID}`}><button className="hover:text-gray-600 duration-100"><PencilFill /></button></Link>
                                         <button className="hover:text-gray-600 duration-100" onClick={() => {
                                             Delete(product);
                                         }}><Trash3Fill /></button>

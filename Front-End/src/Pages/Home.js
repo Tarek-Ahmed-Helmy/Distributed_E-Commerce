@@ -5,9 +5,9 @@ import { Link } from "react-router-dom";
 function ProductCard({ product }) {
     return (
         <div className="w-full">
-            <Link to={`products/${product.id}`}><img src={product.image} alt="product" className="w-full h-[220px] object-contain mx-auto"></img></Link>
+            <Link to={`products/${product.productID}`}><img src={product.image} alt="product" className="w-full h-[220px] object-contain mx-auto"></img></Link>
             <div className="mt-2 px-4 text-center">
-                <Link to={`products/${product.id}`} className="hover:text-[#535C91] duration-200"><h2 className="font-medium">{product.title}</h2></Link>
+                <Link to={`products/${product.productID}`} className="hover:text-[#535C91] duration-200"><h2 className="font-medium">{product.name}</h2></Link>
                 <h2 className="text-md">{product.price} L.E</h2>
             </div>
         </div>
@@ -16,9 +16,9 @@ function ProductCard({ product }) {
 function Home() {
     const [products, setProducts] = useState([]);
     function getProducts() {
-        fetch('https://fakestoreapi.com/products')
+        fetch('http://localhost:4500/product/getAllProductsHome')
             .then(res => res.json())
-            .then(response => setProducts(response))
+            .then(response => setProducts(response.data))
             .catch()
     }
     useEffect(() => {

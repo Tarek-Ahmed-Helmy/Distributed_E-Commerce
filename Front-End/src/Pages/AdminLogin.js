@@ -32,7 +32,7 @@ export default function AdminLogin() {
             if (res.status === "success") {
                 setResError("");
                 dispatch(setCredentials({user:data.username, token: res.data.token , usertype:"admin"}))
-                navigate("/admin")
+                navigate("/seller-products")
             } else if (res.status === "error") {
                 setResError(res.message)
             } else if (res.status === "fail") {
