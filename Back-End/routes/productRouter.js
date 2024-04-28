@@ -13,7 +13,7 @@ router.route('/getAllProducts/:category_name')
     .get(verifyToken, allowedTo('client'), productController.getAllProducts)
 
 router.route('/getAllProductsHome')
-    .get(verifyToken, allowedTo('client','seller'), productController.getAllProductsHome)
+    .get(productController.getAllProductsHome)
 
 router.route('/getAllProductsSeller/:sellerID')
     .get(verifyToken, allowedTo('seller'), productController.getAllProductsSeller)
@@ -23,5 +23,8 @@ router.route('/addStock')
 
 router.route('/addProduct')
     .post(verifyToken, allowedTo('seller'), productController.addProduct)
+
+router.route('/editProduct')
+    .patch(verifyToken, allowedTo('seller'), productController.editProduct)
 
 module.exports = router

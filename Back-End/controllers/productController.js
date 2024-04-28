@@ -103,5 +103,28 @@ module.exports = {
             }
             
         }
+    ),
+    editProduct: asyncWrapper(
+        async(req, res, next)=>{
+            const t1 = await db_EGY.transaction();
+            const t2 = await db_MAR.transaction();
+            try {
+                const productEGY = await Product_EGY.update(req.body, {where:{
+                    productID: req.body.productID
+                }}, {transaction: t1})
+                const productMAR = await Product_MAR.update(req.body,  {where:{
+                    productID: req.body.productID
+                }}, {transaction: t2})
+                await t1.commit();
+                await t2.commit();
+                return res.status(200).json({status: httpStatusCode.SUCCESS, message: "Product Updated Successfully", data: [productEGY, productMAR]})
+            }
+            catch(err){
+                if (t1) await t1.rollback();
+                if (t2) await t2.rollback();
+                const error = appError.create("Unexpected Error, Try Again Later", 500, httpStatusCode.FAIL);
+                return next(error);
+            }
+        }
     )
 }
