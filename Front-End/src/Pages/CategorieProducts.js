@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
+import { useSelector } from "react-redux";
 function ProductCard({ product }) {
     return (
         <div className="w-full">
@@ -16,12 +17,17 @@ function CategorieProducts() {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const category = urlParams.get('type')
+    const client = useSelector(state => state.auth);
     const [active, setActive] = useState(category)
     const categories = ["electronics", "jewelery", "men's clothing", "women's clothing"];
     function getCategoryProducts() {
-        fetch(`https://fakestoreapi.com/products/category/${category}`)
-            .then(res => res.json())
-            .then(response => setProducts(response))
+        fetch(`http://localhost:4500/product/getAllProducts/${category}`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${client.token}`
+            },
+        }).then(res => res.json())
+            .then(response => setProducts(response.data))
             .catch()
     }
     useEffect(() => {

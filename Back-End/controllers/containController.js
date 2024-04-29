@@ -12,11 +12,11 @@ module.exports = {
         async(req, res, next)=>{
             const country = req.currentUser.country
             if(country=="EGY"){
-                const entry = await Contain_EGY.create({quantity: 1, productID: req.body.productID, cartId: req.currentUser.cartId})
+                const entry = await Contain_EGY.create({quantity: 1, productProductID: req.body.productID, cartId: req.currentUser.cartId})
                 return res.status(201).json({ status: httpStatusCode.SUCCESS, message: "Product is added Successfully", data: entry });
             }
             else{
-                const entry = await Contain_MAR.create({quantity: 1, productID: req.body.productID, cartId:  req.currentUser.cartId})
+                const entry = await Contain_MAR.create({quantity: 1, productProductID: req.body.productID, cartId:  req.currentUser.cartId})
                 return res.status(201).json({ status: httpStatusCode.SUCCESS, message: "Product is added Successfully", data: entry });                
             }
         }
@@ -28,14 +28,14 @@ module.exports = {
             if(country=="EGY"){
                 let entry = await Contain_EGY.findOne({
                     where: {
-                        productID: req.body.productID,
+                        productProductID: req.body.productID,
                         cartId: cartId
                     }
                 })
                 if(entry){
                     await Contain_EGY.destroy({
                         where: {
-                            productID: req.body.productID,
+                            productProductID: req.body.productID,
                             cartId: cartId
                         }
                     })
@@ -47,14 +47,14 @@ module.exports = {
             else{
                 let entry = await Contain_MAR.findOne({
                     where: {
-                        productID: req.body.productID,
+                        productProductID: req.body.productID,
                         cartId: cartId
                     }
                 })
                 if(entry){
                     await Contain_MAR.destroy({
                         where: {
-                            productID: req.body.productID,
+                            productProductID: req.body.productID,
                             cartId: cartId
                         }
                     })

@@ -59,10 +59,8 @@ module.exports = {
             return res.status(404).json({status: httpStatusCode.FAIL, message: "There is no products in this category"})
         }
     ),
-    addStock: asyncWrapper( // two cases: 1- there is a product then add quantity. 2- there isn't then add entry
+    addStock: asyncWrapper( 
         async(req, res, next)=>{
-            // i have product id and product name
-            // create transactions
             const t1 = await db_EGY.transaction();
             const t2 = await db_MAR.transaction();
             try {
@@ -102,6 +100,42 @@ module.exports = {
                 return next(error);
             }
             
+        }
+    ),
+    editProduct: asyncWrapper(
+        async(req, res, next)=>{
+            const t1 = await db_EGY.transaction();
+            const t2 = await db_MAR.transaction();
+            try {
+                const productEGY = await Product_EGY.update(req.body, {where:{
+                    productID: req.body.productID
+                }}, {transaction: t1})
+                const productMAR = await Product_MAR.update(req.body,  {where:{
+                    productID: req.body.productID
+                }}, {transaction: t2})
+                await t1.commit();
+                await t2.commit();
+                return res.status(200).json({status: httpStatusCode.SUCCESS, message: "Product Updated Successfully", data: [productEGY, productMAR]})
+            }
+            catch(err){
+                if (t1) await t1.rollback();
+                if (t2) await t2.rollback();
+                const error = appError.create("Unexpected Error, Try Again Later", 500, httpStatusCode.FAIL);
+                return next(error);
+            }
+        }
+    ),
+    getBestSeller: asyncWrapper(
+        async(req, res, next)=>{
+            const productsSorted = await Product_EGY.findAll({
+                order: [
+                    ['quantity_sold', 'DESC']
+                ]
+            })
+            if(productsSorted){
+                return res.status(200).json({status: httpStatusCode.SUCCESS, message: "Here are the best sellers ordered from best to worst", data: productsSorted})
+            }
+            return res.status(400).json({status: httpStatusCode.FAIL, message: "Found no products!"})
         }
     )
 }
