@@ -36,7 +36,7 @@ module.exports = {
                     const product = await ProductModel.findOne({ raw:true, where: { productID: item.productID } });
                     if (!product || product.quantity_available < item.quantity) {
                         await Promise.all([t1.rollback(), t2.rollback(), transaction.rollback()]);
-                        const error = appError.create(`Quantity Available for ${product.name} is insufficient`, 400, httpStatusCode.ERROR)
+                        const error = appError.create(`Quantity Available for this product is insufficient`, 400, httpStatusCode.ERROR)
                         return next(error);
                     }
                     await Product_EGY.update({
@@ -66,9 +66,9 @@ module.exports = {
                 await Promise.all([t1.commit(), t2.commit(), transaction.commit()]);
                 return res.status(201).json({ status: httpStatusCode.SUCCESS, message: "Order is Created and Successfully Paid" });
             } catch (err) {
-                if (t1) await t1.rollback();
-                if (t2) await t2.rollback();
-                if (transaction) await transaction.rollback();
+                if (t1 && !t1.finished) await t1.rollback();
+                if (t2 && !t2.finished) await t2.rollback();
+                if (transaction && !transaction.finished) await transaction.rollback();
                 const error = appError.create("Unexpected Error, Try Again Later", 500, httpStatusCode.FAIL);
                 return next(error);
             }
