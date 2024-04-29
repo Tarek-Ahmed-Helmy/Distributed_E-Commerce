@@ -28,14 +28,14 @@ module.exports = {
             if(country=="EGY"){
                 let entry = await Contain_EGY.findOne({
                     where: {
-                        productID: req.body.productID,
+                        productProductID: req.body.productID,
                         cartId: cartId
                     }
                 })
                 if(entry){
                     await Contain_EGY.destroy({
                         where: {
-                            productID: req.body.productID,
+                            productProductID: req.body.productID,
                             cartId: cartId
                         }
                     })
@@ -47,14 +47,14 @@ module.exports = {
             else{
                 let entry = await Contain_MAR.findOne({
                     where: {
-                        productID: req.body.productID,
+                        productProductID: req.body.productID,
                         cartId: cartId
                     }
                 })
                 if(entry){
                     await Contain_MAR.destroy({
                         where: {
-                            productID: req.body.productID,
+                            productProductID: req.body.productID,
                             cartId: cartId
                         }
                     })
