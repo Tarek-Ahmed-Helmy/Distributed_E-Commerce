@@ -8,9 +8,12 @@ export const cartSlice = createSlice({
         },
         setCartPrice: (state, action) => {
             state.totalPrice = action.payload
-        }
+        },
+        AddProduct: (state, action) => {
+            state.cartProducts.push(action.payload)
+        },
     }
 })
 
-export const { setCartProducts, setCartPrice } = cartSlice.actions;
+export const { setCartProducts, setCartPrice,AddProduct } = cartSlice.actions;
 export default cartSlice.reducer;

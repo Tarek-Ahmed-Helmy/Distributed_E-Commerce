@@ -81,14 +81,14 @@ export default function AdminLogin() {
                         />
                     </div>
                     <ShowErrorMessage condition={reserror !== ""} value={reserror} />
-                    <div className='login-buttons-holder'>
+                    <div className='mt-4 login-buttons-holder'>
                         <button className='login-button admin' type="submit">Login</button>
                         <div className='line-holder'>
                             <hr className="horizontal-line" />
                             <p className='or-text'>OR</p>
                             <hr className="horizontal-line" />
                         </div>
-                        <Link to="/admin-sign-up"><button className='signup-button-login-form mt-4 admin' >Sign up</button></Link>
+                        <Link to="/seller-sign-up"><button className='signup-button-login-form mt-4 admin' >Sign up</button></Link>
                     </div>
                 </form>
             </div>

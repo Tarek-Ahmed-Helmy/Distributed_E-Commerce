@@ -50,16 +50,20 @@ function ProductsControl() {
                     <table className="w-full table-auto mt-2 text-left border-spacing-y-5">
                         <thead>
                             <tr className="border-b border-slate-300">
-                                <th className="py-4 px-2">ID</th>
                                 <th className="py-4 px-2">Title</th>
+                                <th className="py-4 px-2 text-center">Category</th>
+                                <th className="py-4 px-2 text-center">Available Qt.</th>
+                                <th className="py-4 px-2 text-center w-[150px]">Price</th>
                                 <th className="py-4 px-2">Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {products.length > 0 && products.map((product) => {
+                            {products?.length > 0 && products.map((product) => {
                                 return <tr className="border-b border-slate-300">
-                                    <td className="py-4 px-2">{product.productID}</td>
                                     <td className="py-4 px-2">{product.name}</td>
+                                    <td className="py-4 px-2  text-center">{product.category_name}</td>
+                                    <td className="py-4 px-2 text-center">{product.quantity_available}</td>
+                                    <td className="py-4 px-2  text-center">{product.price}</td>
                                     <td className="py-4 px-2 flex items-center gap-6">
                                         <Link to={`${product.productID}`}><button className="hover:text-gray-600 duration-100"><PencilFill /></button></Link>
                                         <button className="hover:text-gray-600 duration-100" onClick={() => {
