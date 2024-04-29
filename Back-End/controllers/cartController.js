@@ -5,12 +5,12 @@ const asyncWrapper = require("../middlewares/asyncWrapper");
 const appError = require("../utils/appError");
 const bcrypt = require('bcrypt')
 const generateJWT = require('../utils/generateJWT')
+const Op = Sequelize.Op
 
 module.exports = {
     getAllProducts: asyncWrapper(
         async(req, res, next)=>{
             const country = req.currentUser.country
-            const {Op} = require("sequelize")
             if(country=="EGY"){
                 const entries = await Contain_EGY.findAll({
                     where:{
@@ -19,7 +19,7 @@ module.exports = {
                 })
                 let validIDs = []
                 for (let index = 0; index < entries.length; index++) {
-                    validIDs.push(entries[index].productID)
+                    validIDs.push(entries[index].productProductID)
                 }
                 const products = await Product_EGY.findAll({
                     where: {
