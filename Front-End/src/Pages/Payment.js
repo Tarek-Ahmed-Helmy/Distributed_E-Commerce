@@ -2,7 +2,10 @@ import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loadStripe } from '@stripe/stripe-js';
-import check from "../Components/images/check.png"
+import { jwtDecode } from 'jwt-decode';
+import { ExclamationCircleFill } from "react-bootstrap-icons";
+import check from "../Components/images/check.png";
+import MoonLoader from "react-spinners/MoonLoader";
 import {
     PaymentElement,
     Elements,
@@ -15,6 +18,12 @@ function CheckoutForm() {
     const stripe = useStripe();
     const elements = useElements();
     const navigate = useNavigate();
+    const cart = useSelector(store => store.cart);
+    const cartProducts = cart.cartProducts;
+    const client = useSelector(store => store.auth);
+    const profile = jwtDecode(client.token);
+    const [errormessage, setErrorMessage] = useState("");
+    const [lodaing, setLodaing] = useState(false);
     useEffect(() => {
         if (elements) {
             let cardElement = elements.getElement('card');
@@ -40,37 +49,62 @@ function CheckoutForm() {
     function HandleChange(e) {
         setData({ ...data, [e.target.name]: e.target.value })
     }
-    function HandleCardNum(e) {
-        const value = e.target.value;
-        if (value.length === 4 || value.length === 9 || value.length === 14) {
-            setData({ ...data, cardNum: (e.target.value + "-") })
-        } else {
-            setData({ ...data, cardNum: e.target.value })
-        }
-    }
-    function HandleExpire(e) {
-        const value = e.target.value;
-        if (value.length === 2) {
-            setData({ ...data, expire: (e.target.value + " / ") })
-        } else {
-            setData({ ...data, expire: e.target.value })
-        }
-    }
     const makePayment = async (event) => {
         event.preventDefault();
+        setLodaing(true)
         stripe.createToken(elements.getElement('card'), {
-            name:data.name
+            name: data.name
         }).then((result) => {
             if (result.error) {
                 // Handle tokenization errors (e.g., invalid card details)
-                console.error(result.error);
+                setLodaing(false)
+                setErrorMessage(result.error);
             } else {
                 // Send the token to your server for further processing
+                setLodaing(false)
                 let token = result.token;
-                console.log(token)
+                makeOrder(token.id)
                 // Your code to send the token to the server (e.g., using AJAX)
             };
         }).catch(error => console.log(error))
+    }
+    function makeOrder(visaToken) {
+        let products = [];
+        cartProducts.map((product) => {
+            products.push({"productID": product.productID ,"quantity": product.quantity})
+        })
+        console.log({
+            "clientID": profile.clientID,
+            "totalPrice": cart.totalPrice,
+            "cardToken": visaToken,
+            "cart": products
+        },client.token)
+        fetch(`http://localhost:4500/orders`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": `Bearer ${client.token}`
+            },
+            body: JSON.stringify({
+                "clientID": profile.clientID,
+                "totalPrice": cart.totalPrice,
+                "cardToken": visaToken,
+                "cart": products
+            }),
+        }).then(res => res.json()).then((res) => {
+            if (res.status === "success") {
+                setLodaing(false)
+                setErrorMessage("")
+                setPayComplete(true);
+                redirect();
+            } else if (res.status === "error") {
+                setLodaing(false)
+                setErrorMessage(res.message)
+            } else if (res.status === "fail") {
+                setLodaing(false)
+                setErrorMessage(res.message)
+            }
+        }).catch(error => { })
     }
     if (!payComplete) return (
         <div className="w-[90%] mx-auto mt-[50px] mb-[50px]">
@@ -88,28 +122,12 @@ function CheckoutForm() {
                         <label className="block mb-6 cursor-icon text-lg w-[250px]">Card Details</label>
                         <CardElement />
                     </div>
-                    {/*<div className="mt-8 flex items-center gap-10" >
-                        <label className="block mb-2 cursor-icon text-lg w-[250px]">Card Number</label>
-                        <input name="expire" type="text" inputmode="numeric"
-                            maxlength="19" placeholder="Enter your card number"
-                            className={`w-[350px] bg-white border border-gray-300
-                        text-gray-900 p-2.5`} value={data.cardNum} onChange={HandleCardNum}></input>
-                    </div>
-                    <div className="mt-8 flex items-center gap-10" >
-                        <label className="block mb-2 cursor-icon text-lg w-[250px]">Expiration Date</label>
-                        <input name="expire" type="text" inputmode="numeric"
-                            maxlength="7" placeholder="MM / YY"
-                            className={`w-[200px] bg-white border border-gray-300
-                        text-gray-900 p-2.5`} value={data.expire} onChange={HandleExpire}></input>
-                    </div>
-                    <div className="mt-8 flex items-center gap-10" >
-                        <label className="block mb-2 cursor-icon text-lg w-[250px]">CVV</label>
-                        <input name="cvv" type="text" inputmode="numeric"
-                            maxlength="3" placeholder="CVV"
-                            className={`w-[100px] bg-white border border-gray-300
-                        text-gray-900 p-2.5`} onChange={HandleChange}></input>
-                    </div> */}
-                    <button className="w-[250px] float-right mt-[50px] px-4 py-3 text-white font-medium text-xl bg-[#1B1A55]" onClick={(e) => { makePayment(e) }}>Pay</button>
+                    {errormessage !== "" && <div className="w-full bg-rose-200 border border-rose-400 flex items-center gap-3 mt-6 px-3 py-2">
+                        <ExclamationCircleFill className="text-[#ff0000]"/>
+                        <p>{errormessage}</p>
+                    </div>}
+                    <button className="w-[250px] float-right mt-[50px] px-4 py-3 text-white font-medium text-xl bg-[#1B1A55] flex items-center justify-center"
+                    onClick={(e) => { makePayment(e) }}>{lodaing ? <MoonLoader color="#ffffff" size={20} /> :  "Pay"}</button>
                 </div>
             </div>
         </div>
@@ -129,7 +147,6 @@ function CheckoutForm() {
 }
 
 export default function Payment() {
-    const cart = useSelector(store => store.cart);
     const stripePromise = loadStripe('pk_test_51P9B5SF2qDRPqlzYG8u2BPlbRks3iMIHRIH0XP2kJNBp9TWbpjBeXzFbvqMiWvnsYhvRZYz0Lt1TmFaEAFGC3rqz004ZqPn6Mm');
     const options = {
         mode: 'payment',

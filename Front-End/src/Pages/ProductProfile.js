@@ -4,9 +4,11 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { jwtDecode } from "jwt-decode";
 import Swal from "sweetalert2";
+import { AddProduct } from "../Components/rtk/slices/cartSlice";
 
 function ProductProfile() {
     const params = useParams();
+    const dispatch = useDispatch();
     const client = useSelector(state => state.auth);
     const profileData = jwtDecode(client.token)
     const productId = params.productid;
@@ -42,11 +44,9 @@ function ProductProfile() {
                 Swal.fire({
                     title: "Product Added To Cart Successfully !",
                     icon: "success"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.reload();
-                    }
                 });
+                dispatch(AddProduct(product))
+                
             } else if (res.status === "error") {
                 Failure(res.message)
             } else if (res.status === "fail") {
@@ -58,7 +58,7 @@ function ProductProfile() {
         getProduct();
     }, [])
     return (
-        <div className="w-[90%] mx-auto mt-[100px]">
+        <div className="w-[90%] mx-auto mt-[100px] mb-[100px]">
             <div className="w-full grid md:grid-cols-2 grid-cols-1 gap-10">
                 <img src={product.image} alt="product" className="w-full object-contain mx-auto lg:h-[500px] md:h-[400px] h-[300px]"></img>
                 <div className="">

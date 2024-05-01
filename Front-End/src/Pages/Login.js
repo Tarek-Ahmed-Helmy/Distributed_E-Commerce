@@ -81,7 +81,7 @@ export default function Login() {
                         />
                     </div>
                     <ShowErrorMessage condition={reserror !== ""} value={reserror} />
-                    <div className='login-buttons-holder'>
+                    <div className='mt-4 login-buttons-holder'>
                         <button className='login-button client' type="submit">Login</button>
                         <div className='line-holder'>
                             <hr className="horizontal-line" />

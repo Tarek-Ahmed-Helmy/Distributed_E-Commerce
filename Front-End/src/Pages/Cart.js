@@ -21,16 +21,34 @@ function Cart() {
                 if (response.status === "error") {
                 } else if (response.status === "fail") {
                 } else if (response.status === "success") {
-                    console.log(response)
                     let products = [];
                     response.data.map((product) => {
                         products.push({ ...product, quantity: 1 })
                     })
                     setProducts(products);
                     getTotalPrice(products)
+                    dispatch(setCartProducts(response.data))
                 }
             }
         ).catch ()
+    }
+    function removeProduct(product) {
+        fetch(`http://localhost:4500/contain/deleteFromCart`, {
+            method: "DELETE",
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": `Bearer ${client.token}`
+            },
+            body: JSON.stringify({
+                "productID": product.productID,
+            }),
+        }).then(res => res.json()).then((res) => {
+            if (res.status === "success") {
+                getProducts();
+            } else if (res.status === "error") {
+            } else if (res.status === "fail") {
+            }
+        }).catch(error => { })
     }
     function getTotalPrice(products) {
         const price = products.reduce((acc, product) => {
@@ -72,7 +90,7 @@ function Cart() {
                             return <div className="mt-5 flex">
                                 <div className="border"><img src={product.image} alt="product" className="min-w-[200px] max-w-[200px] h-[150px] object-contain" /></div>
                                 <div className="sm:ml-[100px] ml-[30px]">
-                                    <h2 className="md:w-3/4 font-medium">{product.title}</h2>
+                                    <h2 className="md:w-3/4 font-medium">{product.name}</h2>
                                     <div className="flex gap-4 items-center mt-2">Quantity: <div className="flex items-center gap-2">
                                         <PlusLg className="cursor-pointer" onClick={() => { increaseQt(products, index) }} />
                                         <p className="border border-[#1B262C] py-0.5 w-6 text-center">{product.quantity}</p>
@@ -80,7 +98,7 @@ function Cart() {
                                     </div>
                                     </div>
                                     <p className="mt-2"><span className="text-[#1B1A55]">Price: </span>{parseFloat((product.price * product.quantity).toFixed(2))}</p>
-                                    <button className="text-[#ff0000] underline text-sm" onClick={() => { }}>remove</button>
+                                    <button className="text-[#ff0000] underline text-sm" onClick={() => {removeProduct(product) }}>remove</button>
                                 </div>
                             </div>
                         })}
