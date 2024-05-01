@@ -20,6 +20,7 @@ import AdminSignup from './Pages/AdminSignUp';
 import Payment from './Pages/Payment';
 import RequireAuth from './Components/RequireAuth';
 import AccountInfo from './Pages/AccountInfo';
+import PurchasedItems from './Pages/PurchasedItems';
 function App() {
   return (
     <>
@@ -30,6 +31,7 @@ function App() {
         <Route path='/' element={<Home />}></Route>
         <Route element={<RequireAuth allowedRoles={["client"]} />} >
           <Route path='profile' element={<Profile />}></Route>
+          <Route path='purchased-items' element={<PurchasedItems />}></Route>
           <Route path='products' element={<Outlet />}>
             <Route path='' element={<Products />} />
             <Route path=':productid' element={<ProductProfile />} />

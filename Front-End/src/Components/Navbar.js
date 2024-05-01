@@ -1,6 +1,6 @@
 import logo from "./images/Logo.png";
 import { Link, useNavigate } from "react-router-dom";
-import { BagFill, PersonFill, Search } from "react-bootstrap-icons";
+import { BagFill, PersonFill, Search, Basket2Fill } from "react-bootstrap-icons";
 import { useState, useRef, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { logOut } from "./rtk/slices/authSlice";
@@ -91,6 +91,7 @@ function NavBar() {
                         <h2 className="bg-[#ff0000] rounded-xl px-[4px] text-[10px] font-medium">{cart?.length}</h2>
                     </div>
                 </div>
+                <Link to="purchased-items" className="text-white text-[27px] hover:text-[#9290C3] duration-200"><Basket2Fill /></Link>
                 <Link to="profile" className="text-[20px] text-[#1B1A55] bg-[#535C91] p-1 rounded-full hover:bg-[#546C92] duration-200"><PersonFill /></Link>
             </div>}
         </div>

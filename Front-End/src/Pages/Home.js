@@ -16,9 +16,15 @@ function ProductCard({ product }) {
 function Home() {
     const [products, setProducts] = useState([]);
     function getProducts() {
-        fetch('http://localhost:4500/product/getAllProductsHome')
+        fetch('http://localhost:4500/product/getBestSeller')
             .then(res => res.json())
-            .then(response => setProducts(response.data))
+            .then(response => {
+                let products = response.data;
+                const sortedProducts = products.sort((a, b) => {
+                        return b.quantity - a.quantity;
+                });
+                setProducts(sortedProducts)
+            })
             .catch()
     }
     useEffect(() => {

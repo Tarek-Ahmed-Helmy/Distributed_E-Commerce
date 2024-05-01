@@ -6,6 +6,8 @@ import { jwtDecode } from 'jwt-decode';
 import { ExclamationCircleFill } from "react-bootstrap-icons";
 import check from "../Components/images/check.png";
 import MoonLoader from "react-spinners/MoonLoader";
+import { useDispatch } from "react-redux";
+import { setCartProducts } from "../Components/rtk/slices/cartSlice";
 import {
     PaymentElement,
     Elements,
@@ -18,6 +20,7 @@ function CheckoutForm() {
     const stripe = useStripe();
     const elements = useElements();
     const navigate = useNavigate();
+    const dispatch  = useDispatch();
     const cart = useSelector(store => store.cart);
     const cartProducts = cart.cartProducts;
     const client = useSelector(store => store.auth);
@@ -95,6 +98,7 @@ function CheckoutForm() {
             if (res.status === "success") {
                 setLodaing(false)
                 setErrorMessage("")
+                dispatch(setCartProducts([]))
                 setPayComplete(true);
                 redirect();
             } else if (res.status === "error") {

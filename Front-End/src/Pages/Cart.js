@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { PlusLg, DashLg } from "react-bootstrap-icons";
 import { useDispatch, useSelector } from "react-redux";
-import { setCartProducts, setCartPrice } from "../Components/rtk/slices/cartSlice";
+import {setCartProducts, setCartPrice } from "../Components/rtk/slices/cartSlice";
 import { useNavigate } from "react-router-dom";
 import emptyList from "../Components/images/empty cart.svg"
 function Cart() {
@@ -9,6 +9,7 @@ function Cart() {
     const navigate = useNavigate();
     const client = useSelector(state => state.auth);
     const [products, setProducts] = useState([]);
+    const[loading, setLodaing] = useState(true);
     const [totalPrice, SetTotalPrice] = useState(0);
     function getProducts() {
         fetch('http://localhost:4500/cart/getAllProducts', {
@@ -19,7 +20,9 @@ function Cart() {
         }).then(res => res.json())
             .then(response => {
                 if (response.status === "error") {
+                    setLodaing(false);
                 } else if (response.status === "fail") {
+                    setLodaing(false);
                 } else if (response.status === "success") {
                     let products = [];
                     response.data.map((product) => {
@@ -28,6 +31,7 @@ function Cart() {
                     setProducts(products);
                     getTotalPrice(products)
                     dispatch(setCartProducts(response.data))
+                    setLodaing(false);
                 }
             }
         ).catch ()
@@ -119,11 +123,11 @@ function Cart() {
             </div>
         </div>
     )
-    else return (
+    else if(!loading) return (
         <div className="flex flex-col items-center text-center justify-center min-h-screen">
             <img src={emptyList} alt="" className="md:h-[350px] md:w-[350px] h-[250px] w-[250px] object-contain"></img>
             <div>
-                <p className="mt-5 text-gray-500 text-md md:text-lg sec-font">Your List is Empty</p>
+                <p className="mt-5 text-gray-500 text-md md:text-lg sec-font">Your Cart is Empty</p>
             </div>
         </div>
     )

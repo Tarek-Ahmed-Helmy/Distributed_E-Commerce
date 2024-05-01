@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
@@ -64,11 +64,10 @@ function ProductProfile() {
                 <div className="">
                     <h2 className="text-gray-400 uppercase">{product.category_name}</h2>
                     <h2 className="main-font text-2xl">{product.name}</h2>
-                    <h3 className="text-5xl my-4">{product.price}$</h3>
+                    <h3 className="text-5xl my-4">{product.price} L.E</h3>
                     <p className="lg:w-3/4">{product.description}</p>
-                    <div className="lg:w-3/4 mt-8 flex items-center text-white gap-4">
-                        <button className="w-full py-2 px-8 bg-[#1B1A55] hover:bg-[#0B0A45] duration-200">Buy it Now</button>
-                        <button className="w-full py-2 px-8 bg-[#535C91] hover:bg-[#434C81] duration-200" onClick={() => {AddToCart() }}>Add to Cart</button>
+                    <div className="w-full mt-8 text-white gap-4">
+                        <button className="w-1/2 py-2 px-8 bg-[#535C91] hover:bg-[#434C81] duration-200" onClick={() => {AddToCart() }}>Add to Cart</button>
                     </div>
                     <br></br>
                 </div>
