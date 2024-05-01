@@ -1,28 +1,32 @@
-const { Order_EGY, Order_MAR, Include_EGY, Include_MAR, Product_EGY, Product_MAR, Seller_EGY, Seller_MAR } = require("../models/modelIndex");
+const { Order_EGY, Order_MAR, Include_EGY, Include_MAR, Product_EGY, Product_MAR, Seller_EGY, Seller_MAR, Contain_EGY, Contain_MAR } = require("../models/modelIndex");
 const httpStatusCode = require("../utils/httpStatusText");
 const asyncWrapper = require("../middlewares/asyncWrapper");
 const appError = require("../utils/appError");
 const { db_EGY, db_MAR } = require("../config/database");
+const product = require("../models/product");
+const { where } = require("sequelize");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 
 module.exports = {
     checkout: asyncWrapper(
         async (req, res, next) => {
-            const { country } = req.currentUser;
+            const { country, cartId } = req.currentUser;
             const { clientID, totalPrice, cart, cardToken } = req.body;
-            let OrderModel, ProductModel, IncludeModel, transaction;
+            let OrderModel, ProductModel, IncludeModel, transaction, SellerModel, ContainModel;
             if (country === 'EGY') {
                 OrderModel = Order_EGY;
                 ProductModel = Product_EGY;
                 IncludeModel = Include_EGY;
                 SellerModel = Seller_EGY;
+                ContainModel = Contain_EGY;
                 transaction = await db_EGY.transaction();
             } else if (country === 'MAR') {
                 OrderModel = Order_MAR;
                 ProductModel = Product_MAR;
                 IncludeModel = Include_MAR;
                 SellerModel = Seller_MAR;
+                ContainModel = Contain_MAR;
                 transaction = await db_MAR.transaction();
             } else {
                 return next(appError.create("Invalid country code", 400, httpStatusCode.ERROR));
@@ -47,6 +51,7 @@ module.exports = {
                         quantity_available: product.quantity_available - item.quantity,
                         quantity_sold: product.quantity_sold + item.quantity
                     }, { where: { productID: item.productID }, transaction: t2 });
+                    await ContainModel.destroy({ where: { cartId: cartId } });
                     const seller = await SellerModel.findOne({ raw: true, where: { sellerID: product.sellerSellerID } });
                     await Seller_EGY.update({ balance: seller.balance + (item.quantity * product.price) }, { where: { sellerID: seller.sellerID }, transaction: t1 });
                     await Seller_MAR.update({ balance: seller.balance + (item.quantity * product.price) }, { where: { sellerID: seller.sellerID }, transaction: t2 });
@@ -74,52 +79,48 @@ module.exports = {
             }
         }
     ),
-    getAll: asyncWrapper(
+    getPurchased: asyncWrapper(
         async (req, res, next) => {
-            const country = req.currentUser.country
+            const { country, clientID } = req.currentUser
+            let OrderModel, IncludeModel, ProductModel
             if (country === 'EGY') {
-                const orders = await Order_EGY.findAll({ raw: true })
-                if (orders.length != 0) {
-                    return res.status(200).json({ status: httpStatusCode.SUCCESS, data: orders });
-                }
-                const error = appError.create("There are No Available orders", 404, httpStatusCode.ERROR);
-                return next(error);
+                OrderModel = Order_EGY;
+                IncludeModel = Include_EGY;
+                ProductModel = Product_EGY;
             } else if (country === 'MAR') {
-                const orders = await Order_MAR.findAll({ raw: true })
-                if (orders.length != 0) {
-                    return res.status(200).json({ status: httpStatusCode.SUCCESS, data: orders });
-                }
-                const error = appError.create("There are No Available orders", 404, httpStatusCode.ERROR);
-                return next(error);
+                OrderModel = Order_MAR;
+                IncludeModel = Include_MAR;
+                ProductModel = Product_MAR;
+            } else {
+                return next(appError.create("Invalid country code", 400, httpStatusCode.ERROR));
             }
-        }
-    ),
-    getOrder: asyncWrapper(
-        async (req, res, next) => {
-            const country = req.currentUser.country
-            if (country === 'EGY') {
-                const order = await Include_EGY.findAll({
+            const orders = await OrderModel.findAll({ raw: true, where: { clientClientID : clientID } });
+            if (orders.length != 0) {
+                let purchased = []
+                for (const order of orders) {
+                    const items = await Include_EGY.findAll({
                     raw: true, where: {
-                        orderID : req.params.ID
+                        orderOrderID : order.orderID
                     }
-                })
-                if (order.length != 0) {
-                    return res.status(200).json({ status: httpStatusCode.SUCCESS, data: order });
-                }
-                const error = appError.create("There are No Available orders", 404, httpStatusCode.ERROR);
-                return next(error);
-            } else if (country === 'MAR') {
-                const order = await Order_MAR.findAll({
-                    raw: true, where: {
-                        orderID : req.params.ID
+                    })
+                    if (items.length != 0) {
+                        for (const item of items) {
+                            const index = purchased.findIndex(p => p.productProductID === item.productProductID);
+                            if (index !== -1) {
+                                purchased[index].quantity += item.quantity;
+                            } else {
+                                const product = await ProductModel.findOne({ raw: true, where: { productID: item.productProductID } })
+                                if (product) {
+                                    purchased.push({ name: product.name, quantity: item.quantity });
+                                }
+                            }
+                        }
                     }
-                })
-                if (order.length != 0) {
-                    return res.status(200).json({ status: httpStatusCode.SUCCESS, data: order });
                 }
-                const error = appError.create("There are No Available orders", 404, httpStatusCode.ERROR);
-                return next(error);
+                return res.status(200).json({ status: httpStatusCode.SUCCESS, data: purchased })
             }
+            const error = appError.create("There are No Available Purchased Products", 404, httpStatusCode.ERROR);
+            return next(error);
         }
     )
 }

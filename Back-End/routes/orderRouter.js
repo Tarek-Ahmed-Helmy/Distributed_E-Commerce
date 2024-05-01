@@ -7,9 +7,6 @@ const router = express.Router();
 
 router.route("/")
     .post(verifyToken, allowedTo('client'), orderController.checkout)
-    .get(verifyToken, allowedTo('client'), orderController.getAll)
-
-router.route("/:ID")
-    .get(verifyToken, allowedTo('client'), orderController.getOrder)
+    .get(verifyToken, allowedTo('client'), orderController.getPurchased)
 
 module.exports = router;
