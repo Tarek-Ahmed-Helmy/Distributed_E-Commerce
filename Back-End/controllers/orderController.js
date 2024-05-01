@@ -62,6 +62,7 @@ module.exports = {
                     };
                     await IncludeModel.create(newItem, { transaction });
                 }
+                await ContainModel.destroy({ where: { cartId: cartId } });
                 await stripe.charges.create({
                     amount: totalPrice * 100,
                     currency: 'usd',
@@ -81,8 +82,8 @@ module.exports = {
     ),
     getPurchased: asyncWrapper(
         async (req, res, next) => {
-            const { country, clientID } = req.currentUser
-            let OrderModel, IncludeModel, ProductModel
+            const { country, clientID } = req.currentUser;
+            let OrderModel, IncludeModel, ProductModel;
             if (country === 'EGY') {
                 OrderModel = Order_EGY;
                 IncludeModel = Include_EGY;
@@ -95,32 +96,35 @@ module.exports = {
                 return next(appError.create("Invalid country code", 400, httpStatusCode.ERROR));
             }
             const orders = await OrderModel.findAll({ raw: true, where: { clientClientID : clientID } });
-            if (orders.length != 0) {
-                let purchased = []
-                for (const order of orders) {
-                    const items = await Include_EGY.findAll({
-                    raw: true, where: {
-                        orderOrderID : order.orderID
-                    }
-                    })
-                    if (items.length != 0) {
-                        for (const item of items) {
-                            const index = purchased.findIndex(p => p.productProductID === item.productProductID);
-                            if (index !== -1) {
-                                purchased[index].quantity += item.quantity;
-                            } else {
-                                const product = await ProductModel.findOne({ raw: true, where: { productID: item.productProductID } })
-                                if (product) {
-                                    purchased.push({ name: product.name, quantity: item.quantity });
-                                }
-                            }
+            let purchased = [];
+            for (const order of orders) {
+                const items = await IncludeModel.findAll({
+                    raw: true,
+                    where: { orderOrderID: order.orderID }
+                });
+                for (const item of items) {
+                    const product = await ProductModel.findOne({ raw: true, where: { productID: item.productProductID } });
+                    if (product) {
+                        const index = purchased.findIndex(p => p.productProductID === item.productProductID);
+                        if (index !== -1) {
+                            purchased[index].quantity += item.quantity;
+                        } else {
+                            purchased.push({
+                                productProductID: item.productProductID,
+                                name: product.name,
+                                quantity: item.quantity,
+                                image: product.image
+                            });
                         }
                     }
                 }
-                return res.status(200).json({ status: httpStatusCode.SUCCESS, data: purchased })
             }
-            const error = appError.create("There are No Available Purchased Products", 404, httpStatusCode.ERROR);
-            return next(error);
+            if (purchased.length > 0) {
+                return res.status(200).json({ status: httpStatusCode.SUCCESS, data: purchased });
+            } else {
+                const error = appError.create("There are no purchased products available", 404, httpStatusCode.ERROR);
+                return next(error);
+            }
         }
     )
 }

@@ -30,4 +30,7 @@ router.route('/editProduct')
 router.route('/getBestSeller')
     .get(productController.getBestSeller)
 
+router.route("/soldItems")
+    .get(verifyToken, allowedTo('seller'), productController.getSold);
+
 module.exports = router

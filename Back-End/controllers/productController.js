@@ -1,4 +1,4 @@
-const Sequelize = require('sequelize');
+const {Op} = require('sequelize');
 const { Client_EGY, Client_MAR, Product_EGY, Product_MAR } = require('../models/modelIndex')
 const httpStatusCode = require("../utils/httpStatusText");
 const asyncWrapper = require("../middlewares/asyncWrapper");
@@ -136,6 +136,23 @@ module.exports = {
                 return res.status(200).json({status: httpStatusCode.SUCCESS, message: "Here are the best sellers ordered from best to worst", data: productsSorted})
             }
             return res.status(400).json({status: httpStatusCode.FAIL, message: "Found no products!"})
+        }
+    ),
+    getSold: asyncWrapper(
+        async (req, res, next) => {
+            const { sellerID } = req.currentUser
+            const products = await Product_EGY.findAll({
+                where: {
+                    sellerSellerID: sellerID,
+                    quantity_sold: {
+                        [Op.gt]: 0
+                    }
+                }
+            })
+            if(products.length != 0){
+                return res.status(200).json({status: httpStatusCode.SUCCESS, data: products})
+            }
+            return res.status(404).json({status: httpStatusCode.FAIL, message: "There is no products sold yet"})
         }
     )
 }
