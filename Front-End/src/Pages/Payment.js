@@ -54,6 +54,14 @@ function CheckoutForm() {
     }
     const makePayment = async (event) => {
         event.preventDefault();
+        if (data.name === "") {
+            setErrorMessage("Please enter the name on your card.")
+            return
+        }
+        if (!elements.getElement('card')._complete) {
+            setErrorMessage("Please enter your card details.")
+            return
+        }
         setLodaing(true)
         stripe.createToken(elements.getElement('card'), {
             name: data.name
@@ -76,12 +84,7 @@ function CheckoutForm() {
         cartProducts.map((product) => {
             products.push({"productID": product.productID ,"quantity": product.quantity})
         })
-        console.log({
-            "clientID": profile.clientID,
-            "totalPrice": cart.totalPrice,
-            "cardToken": visaToken,
-            "cart": products
-        },client.token)
+        
         fetch(`http://localhost:4500/orders`, {
             method: "POST",
             headers: {
